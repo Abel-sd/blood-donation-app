@@ -21,7 +21,7 @@ const authenticationSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["donor", "admin", "hospital"],
+    enum: [ "admin", "hospital"],
     default: "donor",
   },
 });
