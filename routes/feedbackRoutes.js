@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Feedback = require('./models/Feedback'); // Import Feedback model
+const Feedback = require("../models/Feedback/Feedback"); // Import Feedback model
 
 /**
  * @route POST /feedback
@@ -9,21 +9,21 @@ const Feedback = require('./models/Feedback'); // Import Feedback model
  * @body {Object} { donorId: ObjectId, eventId: ObjectId, rating: Number, comments: String }
  * @returns {Object} Created feedback details
  */
-router.post('/feedback', async (req, res) => {
-    try {
-        const { donorId, eventId, rating, comments } = req.body;
-        const newFeedback = new Feedback({
-            donorId,
-            eventId,
-            rating,
-            comments,
-            createdAt: Date.now()
-        });
-        await newFeedback.save();
-        res.status(201).json(newFeedback);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+router.post("/feedback", async (req, res) => {
+  try {
+    const { donorId, eventId, rating, comments } = req.body;
+    const newFeedback = new Feedback({
+      donorId,
+      eventId,
+      rating,
+      comments,
+      createdAt: Date.now(),
+    });
+    await newFeedback.save();
+    res.status(201).json(newFeedback);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
 /**
@@ -32,13 +32,13 @@ router.post('/feedback', async (req, res) => {
  * @access Public
  * @returns {Array} List of feedback
  */
-router.get('/feedback', async (req, res) => {
-    try {
-        const feedbacks = await Feedback.find();
-        res.status(200).json(feedbacks);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+router.get("/feedback", async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find();
+    res.status(200).json(feedbacks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Export the router

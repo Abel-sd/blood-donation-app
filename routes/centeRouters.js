@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Center = require("../models/Center/Center");
+const authMiddleware = require("../Middleware/AuthMiddleware");
 
 /**
  * @route POST /center
@@ -9,7 +10,7 @@ const Center = require("../models/Center/Center");
  * @body {Object} { centerName: String, address: Object, contactInfo: Object, workingHours: Object, bloodInventory: Object }
  * @returns {Object} Created center details
  */
-router.post("/center", async (req, res) => {
+router.post("/center", authMiddleware, async (req, res) => {
   try {
     const { centerName, address, contactInfo, workingHours, bloodInventory } =
       req.body;
@@ -27,7 +28,7 @@ router.post("/center", async (req, res) => {
   }
 });
 
-router.get("/center", async (req, res) => {
+router.get("/center", authMiddleware, async (req, res) => {
   try {
     const centers = await Center.find();
     res.status(200).json(centers);
@@ -35,7 +36,7 @@ router.get("/center", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.get("/center/:id", async (req, res) => {
+router.get("/center/:id", authMiddleware, async (req, res) => {
   try {
     const center = await Center.findById(req.params.id);
     if (!center) {
@@ -46,7 +47,7 @@ router.get("/center/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-router.put("/center/:id", async (req, res) => {
+router.put("/center/:id", authMiddleware, async (req, res) => {
   try {
     const { centerName, address, contactInfo, workingHours, bloodInventory } =
       req.body;
@@ -70,3 +71,4 @@ router.put("/center/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+module.exports = router;

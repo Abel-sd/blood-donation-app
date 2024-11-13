@@ -1,6 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const BloodInventory = require('./models/BloodInventory'); // Import BloodInventory model
+const BloodInventory = require("../models/BloodInventory/BloodInventory"); // Import BloodInventory model
+const authMiddleware = require("../Middleware/AuthMiddleware");
 
 /**
  * @route POST /inventory
@@ -9,20 +10,20 @@ const BloodInventory = require('./models/BloodInventory'); // Import BloodInvent
  * @body {Object} { centerId: ObjectId, bloodType: String, unitsAvailable: Number }
  * @returns {Object} Created blood inventory details
  */
-router.post('/inventory', async (req, res) => {
-    try {
-        const { centerId, bloodType, unitsAvailable } = req.body;
-        const newInventory = new BloodInventory({
-            centerId,
-            bloodType,
-            unitsAvailable,
-            lastUpdated: Date.now()
-        });
-        await newInventory.save();
-        res.status(201).json(newInventory);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+router.post("/inventory", authMiddleware, async (req, res) => {
+  try {
+    const { centerId, bloodType, unitsAvailable } = req.body;
+    const newInventory = new BloodInventory({
+      centerId,
+      bloodType,
+      unitsAvailable,
+      lastUpdated: Date.now(),
+    });
+    await newInventory.save();
+    res.status(201).json(newInventory);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
 /**
@@ -31,13 +32,13 @@ router.post('/inventory', async (req, res) => {
  * @access Admin
  * @returns {Array} List of blood inventories
  */
-router.get('/inventory', async (req, res) => {
-    try {
-        const inventories = await BloodInventory.find();
-        res.status(200).json(inventories);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+router.get("/inventory", authMiddleware, async (req, res) => {
+  try {
+    const inventories = await BloodInventory.find();
+    res.status(200).json(inventories);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 /**
@@ -47,16 +48,16 @@ router.get('/inventory', async (req, res) => {
  * @params {String} id - Inventory ID
  * @returns {Object} Blood inventory details
  */
-router.get('/inventory/:id', async (req, res) => {
-    try {
-        const inventory = await BloodInventory.findById(req.params.id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'Inventory not found' });
-        }
-        res.status(200).json(inventory);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+router.get("/inventory/:id", authMiddleware, async (req, res) => {
+  try {
+    const inventory = await BloodInventory.findById(req.params.id);
+    if (!inventory) {
+      return res.status(404).json({ message: "Inventory not found" });
     }
+    res.status(200).json(inventory);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 /**
@@ -67,21 +68,21 @@ router.get('/inventory/:id', async (req, res) => {
  * @body {Object} { bloodType: String, unitsAvailable: Number }
  * @returns {Object} Updated blood inventory details
  */
-router.put('/inventory/:id', async (req, res) => {
-    try {
-        const { bloodType, unitsAvailable } = req.body;
-        const inventory = await BloodInventory.findByIdAndUpdate(
-            req.params.id,
-            { bloodType, unitsAvailable },
-            { new: true }
-        );
-        if (!inventory) {
-            return res.status(404).json({ message: 'Inventory not found' });
-        }
-        res.status(200).json(inventory);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+router.put("/inventory/:id", authMiddleware, async (req, res) => {
+  try {
+    const { bloodType, unitsAvailable } = req.body;
+    const inventory = await BloodInventory.findByIdAndUpdate(
+      req.params.id,
+      { bloodType, unitsAvailable },
+      { new: true }
+    );
+    if (!inventory) {
+      return res.status(404).json({ message: "Inventory not found" });
     }
+    res.status(200).json(inventory);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
 /**
@@ -91,16 +92,16 @@ router.put('/inventory/:id', async (req, res) => {
  * @params {String} id - Inventory ID
  * @returns {204} No content
  */
-router.delete('/inventory/:id', async (req, res) => {
-    try {
-        const inventory = await BloodInventory.findByIdAndDelete(req.params.id);
-        if (!inventory) {
-            return res.status(404).json({ message: 'Inventory not found' });
-        }
-        res.status(204).send(); // No content to send back
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+router.delete("/inventory/:id", authMiddleware, async (req, res) => {
+  try {
+    const inventory = await BloodInventory.findByIdAndDelete(req.params.id);
+    if (!inventory) {
+      return res.status(404).json({ message: "Inventory not found" });
     }
+    res.status(204).send(); // No content to send back
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Export the router
